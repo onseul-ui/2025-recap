@@ -844,3 +844,28 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Enter 키로 다음 입력칸 이동
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Enter') return;
+
+  const target = e.target;
+
+  // textarea도 한 줄 입력용이면 Enter로 이동
+  if (target.tagName === 'TEXTAREA') {
+    e.preventDefault();
+  }
+
+  if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') return;
+
+  const inputs = Array.from(
+    document.querySelectorAll(
+      'input:not([type="file"]):not([disabled]), textarea:not([disabled])'
+    )
+  ).filter(el => el.offsetParent !== null); // 보이는 것만
+
+  const index = inputs.indexOf(target);
+  if (index > -1 && index < inputs.length - 1) {
+    inputs[index + 1].focus();
+  }
+});
