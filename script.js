@@ -160,25 +160,66 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 }
 
 // 이미지를 Canvas에 로드하는 헬퍼 함수
+// HEIC 포함 파일을 DataURL로 변환
+async function fileToDataURL(file) {
+  const isHeic =
+    file.type === 'image/heic' ||
+    file.type === 'image/heif' ||
+    /\.heic$/i.test(file.name) ||
+    /\.heif$/i.test(file.name);
+
+  let blob = file;
+
+  if (isHeic) {
+    if (typeof heic2any === 'undefined') {
+      console.error('heic2any 라이브러리가 로드되지 않았습니다.');
+      return null;
+    }
+    try {
+      const converted = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9
+      });
+      blob = Array.isArray(converted) ? converted[0] : converted;
+    } catch (e) {
+      console.error('HEIC 변환 실패:', e);
+      return null;
+    }
+  }
+
+  return await new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Canvas에서 쓸 수 있는 Image 객체로 로드
 function loadImageToCanvas(inputId) {
-    return new Promise(function(resolve, reject) {
-        const input = document.getElementById(inputId);
-        if (!input.files || !input.files[0]) {
-            resolve(null);
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                resolve(img);
-            };
-            img.onerror = reject;
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    });
+  return new Promise(async (resolve) => {
+    const input = document.getElementById(inputId);
+    if (!input || !input.files || !input.files[0]) {
+      resolve(null);
+      return;
+    }
+
+    const file = input.files[0];
+    const dataUrl = await fileToDataURL(file);
+    if (!dataUrl) {
+      resolve(null);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => {
+      console.error('이미지 디코딩 실패:', file.name, file.type);
+      resolve(null); // ❗ 실패해도 다음 페이지로 넘어가게 함
+    };
+    img.src = dataUrl;
+  });
 }
 
 // 1~3번 페이지 합성 이미지 생성
