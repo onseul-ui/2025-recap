@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025년 회고하기</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 랜딩 페이지 -->
+        <div id="landing" class="page active">
+            <div class="landing-content">
+                <p class="subtitle">나의 한 해를 돌아보는 시간</p>
+                
+                <div class="name-input-container">
+                    <input type="text" id="user-name" class="name-input" placeholder="이름을 입력하세요">
+                    <p class="name-suffix">님</p>
+                </div>
+                
+                <button class="start-btn" onclick="startRetrospect()">시작하기</button>
+            </div>
+        </div>
+
+        <!-- 페이지 1: 추구미 -->
+        <div id="page1" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">1 / 9</span>
+            </div>
+            <h2 class="page-title">2025년 나의 추구미</h2>
+            <p class="page-desc">올해 내가 추구했던 모습은?</p>
+            
+            <div class="form-group">
+                <label>대표 이미지</label>
+                <input type="file" id="img-page1" accept="image/*" style="display: none;">
+                <div class="polaroid-frame" data-target="img-page1">
+                    <div id="preview-page1" class="polaroid-photo">
+                        <span>+</span>
+                    </div>
+                    <div class="polaroid-label"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>키워드 3개</label>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword1-page1" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword2-page1" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword3-page1" placeholder="" class="keyword-input-hash">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>선택 이유 한 줄</label>
+                <textarea id="reason-page1" placeholder="이 키워드들을 선택한 이유를 적어주세요" rows="3"></textarea>
+            </div>
+
+            <button class="next-btn" onclick="nextPage(2)">다음</button>
+        </div>
+
+        <!-- 페이지 2: 실제미 -->
+        <div id="page2" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">2 / 9</span>
+            </div>
+            <h2 class="page-title">2025년 나의 실제미</h2>
+            <p class="page-desc">실제로 나는 어떤 모습이었나?</p>
+            
+            <div class="form-group">
+                <label>대표 이미지</label>
+                <input type="file" id="img-page2" accept="image/*" style="display: none;">
+                <div class="polaroid-frame" data-target="img-page2">
+                    <div id="preview-page2" class="polaroid-photo">
+                        <span>+</span>
+                    </div>
+                    <div class="polaroid-label"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>키워드 3개</label>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword1-page2" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword2-page2" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="keyword3-page2" placeholder="" class="keyword-input-hash">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>선택 이유 한 줄</label>
+                <textarea id="reason-page2" placeholder="이 키워드들을 선택한 이유를 적어주세요" rows="3"></textarea>
+            </div>
+
+            <button class="next-btn" onclick="nextPage(3)">다음</button>
+        </div>
+
+        <!-- 페이지 3: 갓생 vs 걍생 -->
+        <div id="page3" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">3 / 9</span>
+            </div>
+            <h2 class="page-title">2025 갓생 vs 걍생 비율</h2>
+            <p class="page-desc">올해 나의 삶을 정직하게 평가해봐요</p>
+            
+            <div class="form-group">
+                <div class="ratio-display">
+                    <div class="ratio-item">
+                        <span class="ratio-label">갓생</span>
+                        <span class="ratio-value" id="godlife-percent">50</span>%
+                    </div>
+                    <div class="ratio-item">
+                        <span class="ratio-label">걍생</span>
+                        <span class="ratio-value" id="normal-percent">50</span>%
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <span class="slider-label">갓생</span>
+                    <input type="range" id="life-ratio" min="0" max="100" value="50" 
+                           oninput="updateRatio(this.value)" class="ratio-slider">
+                    <span class="slider-label">걍생</span>
+                </div>
+            </div>
+
+            <button class="next-btn" onclick="generateImage123()">다음</button>
+        </div>
+
+        <!-- 페이지 4: 올해의 OO -->
+        <div id="page4" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">4 / 9</span>
+            </div>
+            <h2 class="page-title">2025년 올해의 OO</h2>
+            <p class="page-desc">올해를 대표하는 것들을 모아봐요</p>
+            
+            <div class="collage-grid">
+                <div class="collage-item">
+                    <label>올해의 노래/앨범/뮤지션</label>
+                    <input type="file" id="img-music" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-music">
+                        <div id="preview-music" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>올해의 영화/드라마/예능</label>
+                    <input type="file" id="img-movie" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-movie">
+                        <div id="preview-movie" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>올해의 책</label>
+                    <input type="file" id="img-book" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-book">
+                        <div id="preview-book" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>올해의 사건/추억/도전</label>
+                    <input type="file" id="img-event" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-event">
+                        <div id="preview-event" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>올해의 소비/선물</label>
+                    <input type="file" id="img-shopping" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-shopping">
+                        <div id="preview-shopping" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>올해의 식당/카페</label>
+                    <input type="file" id="img-food" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-food">
+                        <div id="preview-food" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collage-item">
+                    <label>기타 (자유)</label>
+                    <input type="file" id="img-etc" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-etc">
+                        <div id="preview-etc" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="next-btn" onclick="generateImage4()">다음</button>
+        </div>
+
+        <!-- 페이지 5: 소비 정산 -->
+        <div id="page5" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">5 / 9</span>
+            </div>
+            <h2 class="page-title">소비 정산 - Money Log</h2>
+            <p class="page-desc">올해의 소비를 돌아봐요</p>
+            
+            <div class="money-section">
+                <h3>Best Buy 🏆</h3>
+                <div class="form-group">
+                    <input type="file" id="img-best" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-best">
+                        <div id="preview-best" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                    <textarea id="reason-best" placeholder="이유 한 줄" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="money-section">
+                <h3>Worst Buy 💸</h3>
+                <div class="form-group">
+                    <input type="file" id="img-worst" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-worst">
+                        <div id="preview-worst" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                    <textarea id="reason-worst" placeholder="이유 한 줄" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="money-section">
+                <h3>최애 배달음식 TOP 1 🍔</h3>
+                <div class="form-group">
+                    <input type="file" id="img-delivery" accept="image/*" style="display: none;">
+                    <div class="polaroid-frame-small" data-target="img-delivery">
+                        <div id="preview-delivery" class="polaroid-photo-small">
+                            <span>+</span>
+                        </div>
+                    </div>
+                    <textarea id="reason-delivery" placeholder="이유 한 줄" rows="2"></textarea>
+                </div>
+            </div>
+
+            <button class="next-btn" onclick="generateImage5()">다음</button>
+        </div>
+
+        <!-- 페이지 6: 독서모임 -->
+        <div id="page6" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">6 / 9</span>
+            </div>
+            <h2 class="page-title">우리의 본질은 독서모임</h2>
+            <p class="page-desc">2025 최고의 책</p>
+            
+            <div class="form-group">
+                <label>책 이미지</label>
+                <input type="file" id="img-bookclub" accept="image/*" style="display: none;">
+                <div class="polaroid-frame" data-target="img-bookclub">
+                    <div id="preview-bookclub" class="polaroid-photo">
+                        <span>+</span>
+                    </div>
+                    <div class="polaroid-label"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>책 제목</label>
+                <input type="text" id="book-title" placeholder="책 제목을 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label>이 책을 고른 이유</label>
+                <textarea id="book-reason" placeholder="왜 이 책이 최고였나요?" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>이 책 이후 달라진 나의 생각 or 행동</label>
+                <textarea id="book-change" placeholder="이 책이 나에게 준 변화" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>내년 독서모임에 대한 의견</label>
+                <textarea id="book-opinion" placeholder="2026년 독서모임에 바라는 점" rows="3"></textarea>
+            </div>
+
+            <button class="next-btn" onclick="generateImage6()">다음</button>
+        </div>
+
+        <!-- 페이지 7: 나쁜 습관 -->
+        <div id="page7" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">7 / 9</span>
+            </div>
+            <h2 class="page-title">2025년에 버리고 싶은 나쁜 습관</h2>
+            <p class="page-desc">새해를 위해 버려야 할 것</p>
+            
+            <div class="form-group">
+                <label>버리고 싶은 습관</label>
+                <input type="text" id="habit1" placeholder="예: 미루는 습관">
+            </div>
+
+            <div class="form-group">
+                <label>왜 버리고 싶은지</label>
+                <textarea id="habit1-reason" placeholder="이 습관을 버리고 싶은 이유를 적어주세요" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>이 습관이 나에게 준 손해</label>
+                <textarea id="habit1-damage" placeholder="이 습관으로 인해 받은 손해나 영향" rows="3"></textarea>
+            </div>
+
+            <button class="next-btn" onclick="generateImage7()">다음</button>
+        </div>
+
+        <!-- 페이지 8: 2026 스포일러 -->
+        <div id="page8" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">8 / 9</span>
+            </div>
+            <h2 class="page-title">스포일러하고 싶은 2026년의 소식</h2>
+            <p class="page-desc">2026년에 어떤 일이 일어날지 맞춰보세요</p>
+            
+            <div class="spoiler-keywords">
+                <div class="form-group">
+                    <label>힌트 키워드 3개</label>
+                    <div class="keyword-input-wrapper">
+                        <span class="hashtag">#</span>
+                        <input type="text" id="spoiler1" placeholder="" class="keyword-input-hash">
+                    </div>
+                    <div class="keyword-input-wrapper">
+                        <span class="hashtag">#</span>
+                        <input type="text" id="spoiler2" placeholder="" class="keyword-input-hash">
+                    </div>
+                    <div class="keyword-input-wrapper">
+                        <span class="hashtag">#</span>
+                        <input type="text" id="spoiler3" placeholder="" class="keyword-input-hash">
+                    </div>
+                </div>
+            </div>
+
+            <button class="next-btn" onclick="generateImage8()">다음</button>
+        </div>
+
+        <!-- 페이지 9: 2026 비전보드 -->
+        <div id="page9" class="page">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">← 이전</button>
+                <span class="page-number">9 / 9</span>
+            </div>
+            <h2 class="page-title">2026 추구미 비전보드</h2>
+            <p class="page-desc">새해를 상상하며 만드는 나만의 비전</p>
+            
+            <div class="vision-images">
+                <div class="form-group">
+                    <label>비전 이미지 (여러 장)</label>
+                    <input type="file" id="vision-imgs" accept="image/*" multiple style="display: none;">
+                    <div id="vision-preview" class="multi-image-preview" onclick="document.getElementById('vision-imgs').click()">
+                        <span>+ 여러 이미지 선택 가능</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>키워드 3~5개</label>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="vision-keyword1" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="vision-keyword2" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="vision-keyword3" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="vision-keyword4" placeholder="" class="keyword-input-hash">
+                </div>
+                <div class="keyword-input-wrapper">
+                    <span class="hashtag">#</span>
+                    <input type="text" id="vision-keyword5" placeholder="" class="keyword-input-hash">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>2026년을 대표하는 문장 하나</label>
+                <textarea id="vision-sentence" placeholder="내년 나의 삶을 표현하는 한 문장" rows="3"></textarea>
+            </div>
+
+            <button class="next-btn" onclick="generateImage9()">완료</button>
+        </div>
+
+        <!-- 최종 결과 페이지 -->
+        <div id="result" class="page result-page">
+            <div class="page-header">
+                <h2 class="page-title">🎉 2025 회고 완성!</h2>
+            </div>
+            
+            <p class="result-desc">총 7장의 이미지가 생성되었습니다</p>
+            
+            <div class="slider-container-wrapper">
+                <button class="slider-btn prev-btn" onclick="slideLeft()">←</button>
+                <div class="result-slider" id="result-images">
+                    <!-- 이미지들이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <button class="slider-btn next-btn" onclick="slideRight()">→</button>
+            </div>
+
+            <div class="result-actions">
+                <button class="download-all-btn" onclick="downloadAllImages()">전체 다운로드</button>
+                <button class="reset-btn" onclick="resetData()">처음부터 다시하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 페이지 (고정 오버레이) -->
+    <div id="loading" class="loading-page">
+        <div class="loading-content">
+            <p class="loading-text">2025년을 정리하는 중입니다</p>
+            <p class="loading-subtext">2026년으로 달려가는 중입니다</p>
+            <div class="polaroid-stack">
+                <div class="polaroid-card card-1"></div>
+                <div class="polaroid-card card-2"></div>
+                <div class="polaroid-card card-3"></div>
+                <div class="polaroid-card card-4"></div>
+                <div class="polaroid-card card-5"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
