@@ -86,20 +86,35 @@ function previewImage(input, previewId) {
 
 // 다중 이미지 미리보기
 function previewMultipleImages(input, previewId) {
-    const preview = document.getElementById(previewId);
-    const files = input.files;
-    
-    if (files.length > 0) {
-        preview.innerHTML = '';
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+    try {
+        const preview = document.getElementById(previewId);
+        if (!preview) {
+            console.error('Preview element not found:', previewId);
+            return;
+        }
+
+        const files = input.files;
+
+        if (files.length > 0) {
+            preview.innerHTML = '';
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.onerror = function(error) {
+                        console.error('다중 이미지 로드 실패:', error);
+                    };
+                    preview.appendChild(img);
+                };
+                reader.onerror = function(error) {
+                    console.error('다중 파일 읽기 실패:', error);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    } catch (error) {
+        console.error('Preview multiple images error:', error);
     }
 }
 
@@ -635,17 +650,27 @@ async function generateImage9() {
                     reader.onload = function(e) {
                         const image = new Image();
                         image.onload = function() { resolve(image); };
+                        image.onerror = function(error) {
+                            console.error('비전보드 이미지 로드 실패:', error);
+                            resolve(null);
+                        };
                         image.src = e.target.result;
+                    };
+                    reader.onerror = function(error) {
+                        console.error('비전보드 파일 읽기 실패:', error);
+                        resolve(null);
                     };
                     reader.readAsDataURL(file);
                 });
 
-                const col = i % gridCols;
-                const row = Math.floor(i / gridCols);
-                const x = startX + col * (imgSize + gap);
-                const y = yPos + row * (imgSize + gap);
+                if (img) {
+                    const col = i % gridCols;
+                    const row = Math.floor(i / gridCols);
+                    const x = startX + col * (imgSize + gap);
+                    const y = yPos + row * (imgSize + gap);
 
-                drawImageCover(ctx, img, x, y, imgSize, imgSize);
+                    drawImageCover(ctx, img, x, y, imgSize, imgSize);
+                }
             }
 
             yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
