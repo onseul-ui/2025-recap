@@ -14,7 +14,7 @@
                 <p class="title">나의 한 해를 돌아보는 시간</p>
                 
                 <div class="name-input-container">
-                    <input type="text" id="user-name" class="name-input" placeholder="이름을 입력하세요">
+                    <input type="text" id="user-name" class="name-input" placeholder="이름">
                     <p class="name-suffix">님</p>
                 </div>
                 
@@ -148,7 +148,7 @@
                 <button class="back-btn" onclick="goBack()">← 이전</button>
                 <span class="page-number">4 / 9</span>
             </div>
-            <h2 class="page-title">2025년 올해의 어워드</h2>
+            <h2 class="page-title">2025년 올해의 어워드🏆</h2>
             <p class="page-desc">올해를 대표하는 것들을 모아봐요</p>
             
             <div class="collage-grid">
@@ -232,7 +232,7 @@
                 <button class="back-btn" onclick="goBack()">← 이전</button>
                 <span class="page-number">5 / 9</span>
             </div>
-            <h2 class="page-title">소비 정산 - Money Log</h2>
+            <h2 class="page-title">소비 정산 Money Log</h2>
             <p class="page-desc">올해의 소비를 돌아봐요</p>
             
             <div class="money-section">
@@ -262,7 +262,7 @@
             </div>
 
             <div class="money-section">
-                <h3>최애 배달음식 TOP1 🍔</h3>
+                <h3>최애 배달음식 TOP1 🏅</h3>
                 <div class="form-group">
                     <input type="file" id="img-delivery" accept="image/*" style="display: none;">
                     <div class="polaroid-frame-small" data-target="img-delivery">
@@ -299,7 +299,7 @@
 
             <div class="form-group">
                 <label>책 제목</label>
-                <input type="text" id="book-title" placeholder="책 제목을 입력하세요">
+                <input type="text" id="book-title" placeholder="">
             </div>
 
             <div class="form-group">
@@ -308,13 +308,13 @@
             </div>
 
             <div class="form-group">
-                <label>이 책 이후 달라진 나의 생각 or 행동</label>
-                <textarea id="book-change" placeholder="이 책이 나에게 준 변화" rows="3"></textarea>
+                <label>이 책이 나에게 준 변화</label>
+                <textarea id="book-change" placeholder="" rows="3"></textarea>
             </div>
 
             <div class="form-group">
-                <label>내년 독서모임에 대한 의견</label>
-                <textarea id="book-opinion" placeholder="2026년 독서모임에 바라는 점" rows="3"></textarea>
+                <label>2026년 독서모임에 바라는 점</label>
+                <textarea id="book-opinion" placeholder="" rows="3"></textarea>
             </div>
 
             <button class="next-btn" onclick="generateImage6()">다음</button>
@@ -354,7 +354,7 @@
                 <span class="page-number">8 / 9</span>
             </div>
             <h2 class="page-title">스포일러하고 싶은 2026년의 소식📮</h2>
-            <p class="page-desc">2026년에 어떤 일이 일어날지 맞춰보세요</p>
+            <p class="page-desc">2026년에 나에게 어떤 일이 있을지 맞춰봐</p>
             
             <div class="spoiler-keywords">
                 <div class="form-group">
@@ -388,7 +388,7 @@
             
             <div class="vision-images">
                 <div class="form-group">
-                    <label>비전 이미지 (여러 장)</label>
+                    <label>비전 이미지(최대 6장)</label>
                     <input type="file" id="vision-imgs" accept="image/*" multiple style="display: none;">
                     <div id="vision-preview" class="multi-image-preview" onclick="document.getElementById('vision-imgs').click()">
                         <span>+ 여러 이미지 선택 가능</span>
@@ -397,7 +397,7 @@
             </div>
 
             <div class="form-group">
-                <label>키워드 3~5개</label>
+                <label>키워드 3개</label>
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
                     <input type="text" id="vision-keyword1" placeholder="" class="keyword-input-hash">
@@ -409,14 +409,6 @@
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
                     <input type="text" id="vision-keyword3" placeholder="" class="keyword-input-hash">
-                </div>
-                <div class="keyword-input-wrapper">
-                    <span class="hashtag">#</span>
-                    <input type="text" id="vision-keyword4" placeholder="" class="keyword-input-hash">
-                </div>
-                <div class="keyword-input-wrapper">
-                    <span class="hashtag">#</span>
-                    <input type="text" id="vision-keyword5" placeholder="" class="keyword-input-hash">
                 </div>
             </div>
 
