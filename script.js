@@ -639,22 +639,31 @@ async function generateImage9() {
         
         for (let i = 0; i < imgCount; i++) {
             const file = input.files[i];
-            const img = await new Promise(function(resolve) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
+            try {
+                // HEIC 변환 지원
+                const dataUrl = await fileToDataURL(file);
+                if (!dataUrl) {
+                    console.error('이미지 변환 실패:', file.name);
+                    continue;
+                }
+
+                const img = await new Promise(function(resolve, reject) {
                     const image = new Image();
                     image.onload = function() { resolve(image); };
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            const col = i % gridCols;
-            const row = Math.floor(i / gridCols);
-            const x = startX + col * (imgSize + gap);
-            const y = yPos + row * (imgSize + gap);
-            
-            drawImageCover(ctx, img, x, y, imgSize, imgSize);
+                    image.onerror = function() { reject(new Error('이미지 로드 실패')); };
+                    image.src = dataUrl;
+                });
+
+                const col = i % gridCols;
+                const row = Math.floor(i / gridCols);
+                const x = startX + col * (imgSize + gap);
+                const y = yPos + row * (imgSize + gap);
+
+                drawImageCover(ctx, img, x, y, imgSize, imgSize);
+            } catch (error) {
+                console.error('이미지 처리 중 오류:', file.name, error);
+                // 에러가 발생해도 다음 이미지 계속 처리
+            }
         }
         
         yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
