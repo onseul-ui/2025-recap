@@ -281,6 +281,21 @@ function generateImage9() {
     }, 1000);
 }
 
+// 회고 완료 (Page 9에서 호출)
+function completeRetrospect() {
+    console.log('[DEBUG] completeRetrospect 호출됨');
+    try {
+        showPage('loading');
+        setTimeout(function() {
+            console.log('[DEBUG] 1초 후 showResults 호출');
+            showResults();
+        }, 1000);
+    } catch (error) {
+        console.error('[ERROR] completeRetrospect 실패:', error);
+        alert('완료 처리 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
 // 결과 보여주기
 function showResults() {
     console.log('[DEBUG] showResults 함수 시작');
