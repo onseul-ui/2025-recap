@@ -5,12 +5,24 @@ let generatedImages = [];
 
 // 페이지 전환
 function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    document.getElementById(pageId).classList.add('active');
-    currentPage = pageId;
-    window.scrollTo(0, 0);
+    console.log('[DEBUG] showPage 호출됨, pageId:', pageId);
+    try {
+        const targetPage = document.getElementById(pageId);
+        if (!targetPage) {
+            throw new Error('페이지를 찾을 수 없습니다: ' + pageId);
+        }
+
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        targetPage.classList.add('active');
+        currentPage = pageId;
+        window.scrollTo(0, 0);
+        console.log('[DEBUG] showPage 성공, currentPage:', currentPage);
+    } catch (error) {
+        console.error('[ERROR] showPage 실패:', error);
+        alert('페이지 전환 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 회고 시작
@@ -26,7 +38,14 @@ function startRetrospect() {
 
 // 다음 페이지
 function nextPage(pageNum) {
-    showPage('page' + pageNum);
+    console.log('[DEBUG] nextPage 호출됨, pageNum:', pageNum);
+    try {
+        showPage('page' + pageNum);
+        console.log('[DEBUG] nextPage 성공');
+    } catch (error) {
+        console.error('[ERROR] nextPage 실패:', error);
+        alert('페이지 이동 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 이전 페이지
