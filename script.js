@@ -167,15 +167,22 @@ function loadImageToCanvas(inputId) {
             resolve(null);
             return;
         }
-        
+
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = new Image();
             img.onload = function() {
                 resolve(img);
             };
-            img.onerror = reject;
+            img.onerror = function(error) {
+                console.error('이미지 로드 실패:', error);
+                resolve(null); // 에러 발생 시 null 반환하여 계속 진행
+            };
             img.src = e.target.result;
+        };
+        reader.onerror = function(error) {
+            console.error('파일 읽기 실패:', error);
+            resolve(null); // 에러 발생 시 null 반환하여 계속 진행
         };
         reader.readAsDataURL(input.files[0]);
     });
