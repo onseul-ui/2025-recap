@@ -3,6 +3,9 @@ let currentPage = 'landing';
 let userName = '';
 let generatedImages = [];
 
+// 디버깅: 코드 버전 확인
+console.log('Script loaded - Version 2024-12-25-v3');
+
 // 페이지 전환
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
@@ -418,6 +421,7 @@ async function generateImage5() {
 
 // 6번 페이지 이미지 생성 (독서모임)
 async function generateImage6() {
+    console.log('generateImage6 시작');
     try {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -475,9 +479,12 @@ async function generateImage6() {
 
         generatedImages[3] = canvas.toDataURL('image/png');
         saveToLocalStorage();
+        console.log('generateImage6 완료 - 이미지 저장됨');
     } catch (error) {
-        console.error('이미지 생성 중 오류:', error);
+        console.error('generateImage6 에러:', error);
+        console.error('에러 스택:', error.stack);
     } finally {
+        console.log('generateImage6 finally - nextPage(7) 호출');
         nextPage(7);
     }
 }
