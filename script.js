@@ -17,14 +17,9 @@ function showPage(pageId) {
 function startRetrospect() {
     const nameInput = document.getElementById('user-name');
     const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert('이름을 입력해주세요!');
-        nameInput.focus();
-        return;
-    }
-    
-    userName = name;
+
+    // 이름이 없으면 기본값 사용
+    userName = name || '익명';
     localStorage.setItem('userName', userName);
     showPage('page1');
 }
@@ -544,11 +539,11 @@ async function generateImage7() {
     ctx.fillText('나쁜 습관', canvas.width / 2, 190);
     
     let yPos = 350;
-    
-    const habitName = document.getElementById('habit1').value;
+
+    const habitName = document.getElementById('habit1').value || '입력된 습관 없음';
     const reason = document.getElementById('habit1-reason').value || '';
     const damage = document.getElementById('habit1-damage').value || '';
-    
+
     // 습관 이름
     ctx.fillStyle = '#1a1a1a';
     ctx.font = '400 60px Pretendard, sans-serif';

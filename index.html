@@ -14,7 +14,7 @@
                 <p class="title">나의 한 해를 돌아보는 시간</p>
                 
                 <div class="name-input-container">
-                    <input type="text" id="user-name" class="name-input" placeholder="이름">
+                    <input type="text" id="user-name" class="name-input" placeholder="이름 (선택사항)">
                     <p class="name-suffix">님</p>
                 </div>
                 
@@ -32,7 +32,7 @@
             <p class="page-desc">올해 내가 추구했던 모습은?</p>
             
             <div class="form-group">
-                <label>대표 이미지</label>
+                <label>대표 이미지 (선택사항)</label>
                 <input type="file" id="img-page1" accept="image/*" style="display: none;">
                 <div class="polaroid-frame" data-target="img-page1">
                     <div id="preview-page1" class="polaroid-photo">
@@ -43,7 +43,7 @@
             </div>
 
             <div class="form-group">
-                <label>키워드 3개</label>
+                <label>키워드 (선택사항)</label>
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
                     <input type="text" id="keyword1-page1" placeholder="" class="keyword-input-hash">
@@ -59,8 +59,8 @@
             </div>
 
             <div class="form-group">
-                <label>이유 한 줄</label>
-                <textarea id="reason-page1" placeholder="이 키워드를 선택한 이유를 적어주세요" rows="2"></textarea>
+                <label>이유 한 줄 (선택사항)</label>
+                <textarea id="reason-page1" placeholder="이 키워드를 선택한 이유를 적어주세요 (선택사항)" rows="2"></textarea>
             </div>
 
             <button class="next-btn" onclick="nextPage(2)">다음</button>
@@ -397,24 +397,24 @@
             </div>
 
             <div class="form-group">
-                <label>키워드 3개</label>
+                <label>키워드 (최대 3개, 선택사항)</label>
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
-                    <input type="text" id="vision-keyword1" placeholder="" class="keyword-input-hash">
+                    <input type="text" id="vision-keyword1" placeholder="예: 성장" class="keyword-input-hash">
                 </div>
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
-                    <input type="text" id="vision-keyword2" placeholder="" class="keyword-input-hash">
+                    <input type="text" id="vision-keyword2" placeholder="예: 도전" class="keyword-input-hash">
                 </div>
                 <div class="keyword-input-wrapper">
                     <span class="hashtag">#</span>
-                    <input type="text" id="vision-keyword3" placeholder="" class="keyword-input-hash">
+                    <input type="text" id="vision-keyword3" placeholder="예: 행복" class="keyword-input-hash">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>2026년을 대표하는 문장 하나</label>
-                <textarea id="vision-sentence" placeholder="내년 나의 삶을 표현하는 한 문장" rows="3"></textarea>
+                <label>2026년을 대표하는 문장 (선택사항)</label>
+                <textarea id="vision-sentence" placeholder="내년 나의 삶을 표현하는 한 문장 (선택사항)" rows="3"></textarea>
             </div>
 
             <button class="next-btn" onclick="generateImage9()">완료</button>
