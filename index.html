@@ -422,22 +422,11 @@
 
         <!-- 최종 결과 페이지 -->
         <div id="result" class="page result-page">
-            <div class="page-header">
-                <h2 class="page-title">🎉2025 회고 완성!</h2>
-            </div>
-            
-            <p class="result-desc">총 7장의 이미지가 생성되었습니다</p>
-            
-            <div class="slider-container-wrapper">
-                <button class="slider-btn prev-btn" onclick="slideLeft()">←</button>
-                <div class="result-slider" id="result-images">
-                    <!-- 이미지들이 여기에 동적으로 추가됩니다 -->
-                </div>
-                <button class="slider-btn next-btn" onclick="slideRight()">→</button>
+            <div id="result-images" style="min-height: 100vh;">
+                <!-- 결과 내용이 여기에 동적으로 추가됩니다 -->
             </div>
 
-            <div class="result-actions">
-                <button class="download-all-btn" onclick="downloadAllImages()">전체 다운로드</button>
+            <div class="result-actions" style="text-align: center; padding: 40px 20px;">
                 <button class="reset-btn" onclick="resetData()">처음부터 다시하기</button>
             </div>
         </div>

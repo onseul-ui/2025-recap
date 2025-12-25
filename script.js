@@ -266,43 +266,218 @@ function generateImage9() {
 function showResults() {
     const resultImagesDiv = document.getElementById('result-images');
     resultImagesDiv.innerHTML = '';
-    
-    const titles = [
-        '1. 추구미 vs 실제미',
-        '2. 올해의 OO',
-        '3. 소비정산',
-        '4. 최고의 책',
-        '5. 나쁜 습관',
-        '6. 2026 스포일러',
-        '7. 2026 비전보드'
-    ];
-    
-    generatedImages.forEach(function(imgData, index) {
-        if (imgData) {
-            const div = document.createElement('div');
-            div.className = 'result-item';
-            
-            const title = document.createElement('h3');
-            title.textContent = titles[index];
-            div.appendChild(title);
-            
-            const img = document.createElement('img');
-            img.src = imgData;
-            div.appendChild(img);
-            
-            const btn = document.createElement('button');
-            btn.className = 'download-btn';
-            btn.textContent = '다운로드';
-            btn.onclick = function() {
-                downloadImage(imgData, '2025-회고-' + (index + 1) + '.png');
-            };
-            div.appendChild(btn);
-            
-            resultImagesDiv.appendChild(div);
-        }
-    });
-    
+
+    // 전체 컨테이너
+    const container = document.createElement('div');
+    container.style.cssText = 'max-width: 800px; margin: 0 auto; padding: 40px 20px;';
+
+    // 타이틀
+    const title = document.createElement('h1');
+    title.style.cssText = 'text-align: center; font-size: 2.5em; margin-bottom: 20px; font-weight: 300;';
+    title.textContent = userName ? userName + '님의 2025년 회고' : '나의 2025년 회고';
+    container.appendChild(title);
+
+    const subtitle = document.createElement('p');
+    subtitle.style.cssText = 'text-align: center; color: #666; margin-bottom: 60px; font-size: 1.1em;';
+    subtitle.textContent = '한 해를 돌아보며 작성한 소중한 기록들';
+    container.appendChild(subtitle);
+
+    // 1. 추구미 vs 실제미
+    const section1 = createSection('2025년 나의 추구미 vs 실제미', '#667eea');
+
+    const pursue = createCard('추구미 (내가 추구했던 모습)', '#667eea');
+    const k1_1 = document.getElementById('keyword1-page1').value || '';
+    const k1_2 = document.getElementById('keyword2-page1').value || '';
+    const k1_3 = document.getElementById('keyword3-page1').value || '';
+    const reason1 = document.getElementById('reason-page1').value || '';
+    pursue.innerHTML += `
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #667eea;">키워드:</strong> #${k1_1} #${k1_2} #${k1_3}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>이유:</strong> ${reason1 || '작성하지 않음'}
+        </div>
+    `;
+    section1.appendChild(pursue);
+
+    const reality = createCard('실제미 (실제 나의 모습)', '#764ba2');
+    const k2_1 = document.getElementById('keyword1-page2').value || '';
+    const k2_2 = document.getElementById('keyword2-page2').value || '';
+    const k2_3 = document.getElementById('keyword3-page2').value || '';
+    const reason2 = document.getElementById('reason-page2').value || '';
+    reality.innerHTML += `
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #764ba2;">키워드:</strong> #${k2_1} #${k2_2} #${k2_3}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>이유:</strong> ${reason2 || '작성하지 않음'}
+        </div>
+    `;
+    section1.appendChild(reality);
+
+    container.appendChild(section1);
+
+    // 2. 갓생 vs 걍생
+    const section2 = createSection('2025 갓생 vs 걍생', '#f093fb');
+    const godlife = document.getElementById('godlife-percent').textContent;
+    const normal = document.getElementById('normal-percent').textContent;
+    const ratioCard = createCard('올해 나의 갓생 비율', '#f093fb');
+    ratioCard.innerHTML += `
+        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: bold; color: #667eea;">${godlife}%</div>
+                <div style="margin-top: 10px; color: #666;">갓생</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: bold; color: #764ba2;">${normal}%</div>
+                <div style="margin-top: 10px; color: #666;">걍생</div>
+            </div>
+        </div>
+    `;
+    section2.appendChild(ratioCard);
+    container.appendChild(section2);
+
+    // 3. 소비 정산
+    const section3 = createSection('소비 정산 - Money Log', '#fcb69f');
+
+    const bestBuy = createCard('Best Buy 🏆', '#667eea');
+    const bestReason = document.getElementById('reason-best').value || '작성하지 않음';
+    bestBuy.innerHTML += `<div style="color: #666; line-height: 1.6;">${bestReason}</div>`;
+    section3.appendChild(bestBuy);
+
+    const worstBuy = createCard('Worst Buy 💸', '#764ba2');
+    const worstReason = document.getElementById('reason-worst').value || '작성하지 않음';
+    worstBuy.innerHTML += `<div style="color: #666; line-height: 1.6;">${worstReason}</div>`;
+    section3.appendChild(worstBuy);
+
+    const delivery = createCard('최애 배달음식 🍔', '#fcb69f');
+    const deliveryReason = document.getElementById('reason-delivery').value || '작성하지 않음';
+    delivery.innerHTML += `<div style="color: #666; line-height: 1.6;">${deliveryReason}</div>`;
+    section3.appendChild(delivery);
+
+    container.appendChild(section3);
+
+    // 4. 독서모임
+    const section4 = createSection('우리의 본질은 독서모임 📚', '#4facfe');
+    const bookCard = createCard('2025 최고의 책', '#4facfe');
+    const bookTitle = document.getElementById('book-title').value || '작성하지 않음';
+    const bookReason = document.getElementById('book-reason').value || '작성하지 않음';
+    const bookChange = document.getElementById('book-change').value || '작성하지 않음';
+    const bookOpinion = document.getElementById('book-opinion').value || '작성하지 않음';
+    bookCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #4facfe; font-size: 1.3em;">${bookTitle}</strong>
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>📖 선택 이유:</strong><br>${bookReason}
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>✨ 이후 변화:</strong><br>${bookChange}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>💭 2026년 독서모임에 바라는 점:</strong><br>${bookOpinion}
+        </div>
+    `;
+    section4.appendChild(bookCard);
+    container.appendChild(section4);
+
+    // 5. 나쁜 습관
+    const section5 = createSection('2025년에 버리고 싶은 나쁜 습관', '#fa709a');
+    const habitCard = createCard('버리고 싶은 습관', '#fa709a');
+    const habitName = document.getElementById('habit1').value || '작성하지 않음';
+    const habitReason = document.getElementById('habit1-reason').value || '작성하지 않음';
+    const habitDamage = document.getElementById('habit1-damage').value || '작성하지 않음';
+    habitCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #fa709a; font-size: 1.5em;">${habitName}</strong>
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>왜 버리고 싶은가:</strong><br>${habitReason}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>나에게 준 손해:</strong><br>${habitDamage}
+        </div>
+    `;
+    section5.appendChild(habitCard);
+    container.appendChild(section5);
+
+    // 6. 2026 스포일러
+    const section6 = createSection('스포일러하고 싶은 2026년의 소식 📮', '#30cfd0');
+    const spoilerCard = createCard('힌트 키워드', '#30cfd0');
+    const spoiler1 = document.getElementById('spoiler1').value || '';
+    const spoiler2 = document.getElementById('spoiler2').value || '';
+    const spoiler3 = document.getElementById('spoiler3').value || '';
+    const spoilers = [spoiler1, spoiler2, spoiler3].filter(s => s);
+    spoilerCard.innerHTML += `
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+            ${spoilers.map(s => `<span style="background: #30cfd0; color: white; padding: 10px 20px; border-radius: 25px; font-size: 1.2em;">#${s}</span>`).join('')}
+        </div>
+    `;
+    section6.appendChild(spoilerCard);
+    container.appendChild(section6);
+
+    // 7. 2026 비전보드
+    const section7 = createSection('2026 추구미 비전보드 ✨', '#a8edea');
+    const visionCard = createCard('나의 비전', '#a8edea');
+    const visionK1 = document.getElementById('vision-keyword1').value || '';
+    const visionK2 = document.getElementById('vision-keyword2').value || '';
+    const visionK3 = document.getElementById('vision-keyword3').value || '';
+    const visionKeywords = [visionK1, visionK2, visionK3].filter(k => k);
+    const visionSentence = document.getElementById('vision-sentence').value || '작성하지 않음';
+    visionCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong>키워드:</strong><br>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                ${visionKeywords.map(k => `<span style="background: #a8edea; padding: 8px 16px; border-radius: 20px; font-size: 1.1em;">#${k}</span>`).join('')}
+            </div>
+        </div>
+        <div style="color: #666; line-height: 1.6; font-style: italic; font-size: 1.1em; margin-top: 20px;">
+            "${visionSentence}"
+        </div>
+    `;
+    section7.appendChild(visionCard);
+    container.appendChild(section7);
+
+    // 마무리 메시지
+    const footer = document.createElement('div');
+    footer.style.cssText = 'text-align: center; margin-top: 60px; padding: 40px 20px; background: #f8f9fa; border-radius: 10px;';
+    footer.innerHTML = `
+        <h3 style="font-weight: 400; margin-bottom: 15px;">🎉 2025년 회고를 완성했습니다!</h3>
+        <p style="color: #666; line-height: 1.8;">
+            한 해를 돌아보는 시간을 가지셨습니다.<br>
+            2026년에는 더 멋진 한 해를 만들어가세요! 💪
+        </p>
+    `;
+    container.appendChild(footer);
+
+    resultImagesDiv.appendChild(container);
     showPage('result');
+}
+
+// 섹션 생성 헬퍼 함수
+function createSection(title, color) {
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom: 50px;';
+
+    const heading = document.createElement('h2');
+    heading.style.cssText = `font-size: 1.8em; margin-bottom: 25px; font-weight: 400; color: ${color}; border-bottom: 2px solid ${color}; padding-bottom: 10px;`;
+    heading.textContent = title;
+    section.appendChild(heading);
+
+    return section;
+}
+
+// 카드 생성 헬퍼 함수
+function createCard(title, color) {
+    const card = document.createElement('div');
+    card.style.cssText = 'background: white; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid ' + color + ';';
+
+    const cardTitle = document.createElement('h3');
+    cardTitle.style.cssText = 'font-size: 1.3em; margin-bottom: 15px; font-weight: 400; color: #333;';
+    cardTitle.textContent = title;
+    card.appendChild(cardTitle);
+
+    return card;
 }
 
 // 슬라이더 좌우 이동 함수
