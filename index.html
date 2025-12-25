@@ -63,7 +63,7 @@
                 <textarea id="reason-page1" placeholder="이 키워드를 선택한 이유를 적어주세요" rows="2"></textarea>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page2').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(2)">다음</button>
         </div>
 
         <!-- 페이지 2: 실제미 -->
@@ -107,7 +107,7 @@
                 <textarea id="reason-page2" placeholder="이 키워드를 선택한 이유를 적어주세요" rows="2"></textarea>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page3').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(3)">다음</button>
         </div>
 
         <!-- 페이지 3: 갓생 vs 걍생 -->
@@ -139,7 +139,7 @@
                 </div>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page4').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(4)">다음</button>
         </div>
 
         <!-- 페이지 4: 올해의 OO -->
@@ -223,7 +223,7 @@
                 </div>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page5').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(5)">다음</button>
         </div>
 
         <!-- 페이지 5: 소비 정산 -->
@@ -274,7 +274,7 @@
                 </div>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page6').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(6)">다음</button>
         </div>
 
         <!-- 페이지 6: 독서모임 -->
@@ -317,7 +317,7 @@
                 <textarea id="book-opinion" placeholder="" rows="4"></textarea>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page7').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(7)">다음</button>
         </div>
 
         <!-- 페이지 7: 나쁜 습관 -->
@@ -344,7 +344,7 @@
                 <textarea id="habit1-damage" placeholder="이 습관으로 인해 받은 손해나 영향" rows="3"></textarea>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page8').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(8)">다음</button>
         </div>
 
         <!-- 페이지 8: 2026 스포일러 -->
@@ -374,7 +374,7 @@
                 </div>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page9').classList.add('active'); window.scrollTo(0,0);">다음</button>
+            <button class="next-btn" onclick="nextPage(9)">다음</button>
         </div>
 
         <!-- 페이지 9: 2026 비전보드 -->
@@ -417,7 +417,7 @@
                 <textarea id="vision-sentence" placeholder="내년 나의 삶을 표현하는 한 문장" rows="3"></textarea>
             </div>
 
-            <button class="next-btn" onclick="document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('loading').classList.add('active'); setTimeout(function() { showResults(); }, 1000);">완료</button>
+            <button class="next-btn" onclick="showPage('loading'); setTimeout(function() { showResults(); }, 1000);">완료</button>
         </div>
 
         <!-- 최종 결과 페이지 -->

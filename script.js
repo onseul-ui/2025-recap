@@ -477,12 +477,8 @@ function showResults() {
     resultImagesDiv.appendChild(container);
     console.log('[DEBUG] showResults 완료, 결과 페이지로 이동');
 
-    // 직접 DOM 조작으로 페이지 전환
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    document.getElementById('result').classList.add('active');
-    window.scrollTo(0, 0);
+    // showPage 함수를 사용하여 currentPage 변수도 업데이트
+    showPage('result');
 
     } catch (error) {
         console.error('[ERROR] showResults 실패:', error);
