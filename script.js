@@ -123,11 +123,24 @@ function previewMultipleImages(input, previewId) {
 
 // 비율 업데이트
 function updateRatio(value) {
-    const godlife = value;
-    const normal = 100 - value;
-    
-    document.getElementById('godlife-percent').textContent = godlife;
-    document.getElementById('normal-percent').textContent = normal;
+    try {
+        console.log('updateRatio 호출됨, value:', value);
+        const godlife = parseInt(value);
+        const normal = 100 - godlife;
+
+        const godlifeElem = document.getElementById('godlife-percent');
+        const normalElem = document.getElementById('normal-percent');
+
+        if (godlifeElem && normalElem) {
+            godlifeElem.textContent = godlife;
+            normalElem.textContent = normal;
+            console.log('비율 업데이트 완료:', godlife, '/', normal);
+        } else {
+            console.error('비율 표시 요소를 찾을 수 없음');
+        }
+    } catch (error) {
+        console.error('updateRatio 에러:', error);
+    }
 }
 
 // Canvas에 이미지를 비율 유지하며 그리기
@@ -208,6 +221,7 @@ function loadImageToCanvas(inputId) {
 
 // 1~3번 페이지 합성 이미지 생성
 async function generateImage123() {
+    console.log('generateImage123 시작');
     try {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -289,9 +303,12 @@ async function generateImage123() {
         // 이미지 저장
         generatedImages[0] = canvas.toDataURL('image/png');
         saveToLocalStorage();
+        console.log('generateImage123 완료 - 이미지 저장됨');
     } catch (error) {
-        console.error('이미지 생성 중 오류:', error);
+        console.error('generateImage123 에러:', error);
+        console.error('에러 스택:', error.stack);
     } finally {
+        console.log('generateImage123 finally - nextPage(4) 호출');
         nextPage(4);
     }
 }
