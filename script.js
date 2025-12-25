@@ -17,14 +17,9 @@ function showPage(pageId) {
 function startRetrospect() {
     const nameInput = document.getElementById('user-name');
     const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert('이름을 입력해주세요!');
-        nameInput.focus();
-        return;
-    }
-    
-    userName = name;
+
+    // 이름 입력은 선택사항
+    userName = name || '익명';
     localStorage.setItem('userName', userName);
     showPage('page1');
 }
