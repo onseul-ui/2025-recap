@@ -283,12 +283,17 @@ function generateImage9() {
 
 // 결과 보여주기
 function showResults() {
-    const resultImagesDiv = document.getElementById('result-images');
-    resultImagesDiv.innerHTML = '';
+    console.log('[DEBUG] showResults 함수 시작');
+    try {
+        const resultImagesDiv = document.getElementById('result-images');
+        if (!resultImagesDiv) {
+            throw new Error('result-images 엘리먼트를 찾을 수 없습니다');
+        }
+        resultImagesDiv.innerHTML = '';
 
-    // 전체 컨테이너
-    const container = document.createElement('div');
-    container.style.cssText = 'max-width: 800px; margin: 0 auto; padding: 40px 20px;';
+        // 전체 컨테이너
+        const container = document.createElement('div');
+        container.style.cssText = 'max-width: 800px; margin: 0 auto; padding: 40px 20px;';
 
     // 타이틀
     const title = document.createElement('h1');
@@ -470,7 +475,12 @@ function showResults() {
     container.appendChild(footer);
 
     resultImagesDiv.appendChild(container);
+    console.log('[DEBUG] showResults 완료, 결과 페이지로 이동');
     showPage('result');
+    } catch (error) {
+        console.error('[ERROR] showResults 실패:', error);
+        alert('결과 페이지 생성 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 섹션 생성 헬퍼 함수
