@@ -664,9 +664,9 @@ async function generateImage9() {
     
     // 키워드
     const keywords = [];
-    for (let i = 1; i <= 5; i++) {
-        const kw = document.getElementById('vision-keyword' + i).value;
-        if (kw) keywords.push('#' + kw);
+    for (let i = 1; i <= 3; i++) {
+        const kw = document.getElementById('vision-keyword' + i);
+        if (kw && kw.value) keywords.push('#' + kw.value);
     }
     
     ctx.fillStyle = '#667eea';
