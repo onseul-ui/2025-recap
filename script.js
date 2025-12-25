@@ -647,89 +647,126 @@ async function generateImage8() {
 
 // 9번 페이지 이미지 생성 (2026 비전보드)
 async function generateImage9() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = '300 60px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('2026 추구미 비전보드', canvas.width / 2, 100);
-    
-    // 비전 이미지들 (콜라주)
-    const input = document.getElementById('vision-imgs');
-    if (input.files && input.files.length > 0) {
-        const imgCount = Math.min(input.files.length, 6);
-        const gridCols = 3;
-        const imgSize = 330;
-        const gap = 15;
-        const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
+    try {
+        console.log('generateImage9 시작');
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1440;
+        const ctx = canvas.getContext('2d');
+
+        // 배경
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 제목
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '300 60px Pretendard, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('2026 추구미 비전보드', canvas.width / 2, 100);
+
+        // 비전 이미지들 (콜라주)
+        const input = document.getElementById('vision-imgs');
         let yPos = 200;
 
-        for (let i = 0; i < imgCount; i++) {
-            const file = input.files[i];
-            // 리사이징된 이미지 로드
-            const dataUrl = await fileToDataURL(file);
-            if (!dataUrl) continue;
+        if (input && input.files && input.files.length > 0) {
+            console.log('이미지 로딩 시작:', input.files.length + '개');
+            const imgCount = Math.min(input.files.length, 6);
+            const gridCols = 3;
+            const imgSize = 330;
+            const gap = 15;
+            const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
 
-            const img = await new Promise(function(resolve) {
-                const image = new Image();
-                image.onload = function() { resolve(image); };
-                image.onerror = function() { resolve(null); };
-                image.src = dataUrl;
-            });
+            for (let i = 0; i < imgCount; i++) {
+                try {
+                    const file = input.files[i];
+                    console.log('이미지 처리 중:', i, file.name);
 
-            if (!img) continue;
+                    // 리사이징된 이미지 로드
+                    const dataUrl = await fileToDataURL(file);
+                    if (!dataUrl) {
+                        console.warn('이미지 로드 실패:', i);
+                        continue;
+                    }
 
-            const col = i % gridCols;
-            const row = Math.floor(i / gridCols);
-            const x = startX + col * (imgSize + gap);
-            const y = yPos + row * (imgSize + gap);
+                    const img = await new Promise(function(resolve) {
+                        const image = new Image();
+                        image.onload = function() { resolve(image); };
+                        image.onerror = function() { resolve(null); };
+                        image.src = dataUrl;
+                    });
 
-            drawImageCover(ctx, img, x, y, imgSize, imgSize);
+                    if (!img) {
+                        console.warn('이미지 디코딩 실패:', i);
+                        continue;
+                    }
+
+                    const col = i % gridCols;
+                    const row = Math.floor(i / gridCols);
+                    const x = startX + col * (imgSize + gap);
+                    const y = yPos + row * (imgSize + gap);
+
+                    drawImageCover(ctx, img, x, y, imgSize, imgSize);
+                } catch (imgError) {
+                    console.error('이미지 처리 중 오류:', i, imgError);
+                }
+            }
+
+            yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
+        } else {
+            console.log('비전 이미지 없음');
+            yPos = 900;
         }
 
-        yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
-    } else {
-        let yPos = 900;
-    }
-    
-    // 키워드
-    const keywords = [];
-    for (let i = 1; i <= 3; i++) {
-        const element = document.getElementById('vision-keyword' + i);
-        if (element && element.value) {
-            keywords.push('#' + element.value);
+        // 키워드
+        const keywords = [];
+        for (let i = 1; i <= 3; i++) {
+            const element = document.getElementById('vision-keyword' + i);
+            if (element && element.value) {
+                keywords.push('#' + element.value);
+            }
         }
+        console.log('키워드:', keywords);
+
+        ctx.fillStyle = '#667eea';
+        ctx.font = '400 50px Pretendard, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(keywords.join(' '), canvas.width / 2, 1100);
+
+        // 문장
+        ctx.fillStyle = '#333';
+        ctx.font = '300 40px Pretendard, sans-serif';
+        const sentence = document.getElementById('vision-sentence')?.value || '';
+        console.log('문장:', sentence);
+
+        if (sentence) {
+            wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
+        }
+
+        generatedImages[6] = canvas.toDataURL('image/jpeg', 0.9);
+        console.log('이미지 생성 완료');
+
+        saveToLocalStorage();
+
+        // 로딩 페이지 1초만 표시
+        showPage('loading');
+
+        // 1초 후 결과 페이지로 이동
+        setTimeout(function() {
+            console.log('결과 페이지로 이동');
+            showResults();
+        }, 1000);
+
+    } catch (error) {
+        console.error('generateImage9 오류:', error);
+        alert('이미지 생성 중 오류가 발생했습니다. 그래도 결과 페이지로 이동합니다.');
+
+        // 오류가 발생해도 결과 페이지로 이동
+        showPage('loading');
+        setTimeout(function() {
+            showResults();
+        }, 1000);
     }
-    
-    ctx.fillStyle = '#667eea';
-    ctx.font = '400 50px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(keywords.join(' '), canvas.width / 2, 1100);
-    
-    // 문장
-    ctx.fillStyle = '#333';
-    ctx.font = '300 40px Pretendard, sans-serif';
-    const sentence = document.getElementById('vision-sentence').value || '';
-    wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
-    
-    generatedImages[6] = canvas.toDataURL('image/jpeg', 0.9);
-    saveToLocalStorage();
-    
-    // 로딩 페이지 1초만 표시
-    showPage('loading');
-    
-    // 1초 후 결과 페이지로 이동
-    setTimeout(function() {
-        showResults();
-    }, 1000);
 }
 
 // 결과 보여주기
