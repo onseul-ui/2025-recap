@@ -159,9 +159,35 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
     return y;
 }
 
+// 이미지 리사이징 함수 (메모리 최적화)
+function resizeImage(img, maxSize = 1920) {
+  const canvas = document.createElement('canvas');
+  let width = img.width;
+  let height = img.height;
+
+  // 최대 크기를 초과하면 비율 유지하며 축소
+  if (width > maxSize || height > maxSize) {
+    if (width > height) {
+      height = (height / width) * maxSize;
+      width = maxSize;
+    } else {
+      width = (width / height) * maxSize;
+      height = maxSize;
+    }
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, width, height);
+
+  // JPEG로 변환하여 용량 감소 (품질 0.85)
+  return canvas.toDataURL('image/jpeg', 0.85);
+}
+
 // 이미지를 Canvas에 로드하는 헬퍼 함수
 // HEIC 포함 파일을 DataURL로 변환
-async function fileToDataURL(file) {
+async function fileToDataURL(file, resize = true) {
   const isHeic =
     file.type === 'image/heic' ||
     file.type === 'image/heif' ||
@@ -179,7 +205,7 @@ async function fileToDataURL(file) {
       const converted = await heic2any({
         blob: file,
         toType: 'image/jpeg',
-        quality: 0.9
+        quality: 0.8
       });
       blob = Array.isArray(converted) ? converted[0] : converted;
     } catch (e) {
@@ -188,11 +214,26 @@ async function fileToDataURL(file) {
     }
   }
 
-  return await new Promise((resolve) => {
+  const dataUrl = await new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => resolve(e.target.result);
     reader.onerror = () => resolve(null);
     reader.readAsDataURL(blob);
+  });
+
+  if (!dataUrl || !resize) {
+    return dataUrl;
+  }
+
+  // 이미지 리사이징 적용
+  return await new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const resized = resizeImage(img);
+      resolve(resized);
+    };
+    img.onerror = () => resolve(dataUrl); // 리사이징 실패 시 원본 반환
+    img.src = dataUrl;
   });
 }
 
