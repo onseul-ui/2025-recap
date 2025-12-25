@@ -159,6 +159,41 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
     return y;
 }
 
+// 이미지 리사이징 함수 (메모리 절약)
+async function resizeImage(dataUrl, maxWidth = 1920, maxHeight = 1920, quality = 0.85) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      // 이미지가 최대 크기보다 작으면 원본 반환
+      if (width <= maxWidth && height <= maxHeight) {
+        resolve(dataUrl);
+        return;
+      }
+
+      // 비율 유지하며 리사이징
+      const ratio = Math.min(maxWidth / width, maxHeight / height);
+      width = Math.floor(width * ratio);
+      height = Math.floor(height * ratio);
+
+      // Canvas에 리사이징된 이미지 그리기
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // JPEG로 압축 (품질 조절)
+      const resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+      resolve(resizedDataUrl);
+    };
+    img.onerror = () => resolve(dataUrl); // 실패 시 원본 반환
+    img.src = dataUrl;
+  });
+}
+
 // 이미지를 Canvas에 로드하는 헬퍼 함수
 // HEIC 포함 파일을 DataURL로 변환
 async function fileToDataURL(file) {
@@ -179,7 +214,7 @@ async function fileToDataURL(file) {
       const converted = await heic2any({
         blob: file,
         toType: 'image/jpeg',
-        quality: 0.9
+        quality: 0.85
       });
       blob = Array.isArray(converted) ? converted[0] : converted;
     } catch (e) {
@@ -188,12 +223,17 @@ async function fileToDataURL(file) {
     }
   }
 
-  return await new Promise((resolve) => {
+  const dataUrl = await new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => resolve(e.target.result);
     reader.onerror = () => resolve(null);
     reader.readAsDataURL(blob);
   });
+
+  if (!dataUrl) return null;
+
+  // 이미지 리사이징 적용
+  return await resizeImage(dataUrl);
 }
 
 // Canvas에서 쓸 수 있는 Image 객체로 로드
@@ -301,10 +341,10 @@ async function generateImage123() {
     ctx.textAlign = 'center';
     ctx.fillText('갓생 ' + godlife + '% : 걍생 ' + normal + '%', canvas.width / 2, yPos + 90);
     
-    // 이미지 저장
-    generatedImages[0] = canvas.toDataURL('image/png');
+    // 이미지 저장 (JPEG 압축으로 용량 절약)
+    generatedImages[0] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(4);
 }
 
@@ -359,9 +399,9 @@ async function generateImage4() {
         }
     }
     
-    generatedImages[1] = canvas.toDataURL('image/png');
+    generatedImages[1] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(5);
 }
 
@@ -417,9 +457,9 @@ async function generateImage5() {
         yPos += 400;
     }
     
-    generatedImages[2] = canvas.toDataURL('image/png');
+    generatedImages[2] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(6);
 }
 
@@ -479,9 +519,9 @@ async function generateImage6() {
     const change = document.getElementById('book-change').value || '';
     wrapText(ctx, change, 100, yPos + 30, 880, 35);
     
-    generatedImages[3] = canvas.toDataURL('image/png');
+    generatedImages[3] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(7);
 }
 
@@ -548,9 +588,9 @@ async function generateImage7() {
     ctx.font = '300 30px Pretendard, sans-serif';
     wrapText(ctx, damage, 150, yPos + 50, 780, 45);
     
-    generatedImages[4] = canvas.toDataURL('image/png');
+    generatedImages[4] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(8);
 }
 
@@ -604,9 +644,9 @@ async function generateImage8() {
         yPos += 280;
     });
     
-    generatedImages[5] = canvas.toDataURL('image/png');
+    generatedImages[5] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
-    
+
     nextPage(9);
 }
 
@@ -636,27 +676,30 @@ async function generateImage9() {
         const gap = 15;
         const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
         let yPos = 200;
-        
+
         for (let i = 0; i < imgCount; i++) {
             const file = input.files[i];
+            // 리사이징된 이미지 로드
+            const dataUrl = await fileToDataURL(file);
+            if (!dataUrl) continue;
+
             const img = await new Promise(function(resolve) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = new Image();
-                    image.onload = function() { resolve(image); };
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                const image = new Image();
+                image.onload = function() { resolve(image); };
+                image.onerror = function() { resolve(null); };
+                image.src = dataUrl;
             });
-            
+
+            if (!img) continue;
+
             const col = i % gridCols;
             const row = Math.floor(i / gridCols);
             const x = startX + col * (imgSize + gap);
             const y = yPos + row * (imgSize + gap);
-            
+
             drawImageCover(ctx, img, x, y, imgSize, imgSize);
         }
-        
+
         yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
     } else {
         let yPos = 900;
@@ -680,7 +723,7 @@ async function generateImage9() {
     const sentence = document.getElementById('vision-sentence').value || '';
     wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
     
-    generatedImages[6] = canvas.toDataURL('image/png');
+    generatedImages[6] = canvas.toDataURL('image/jpeg', 0.9);
     saveToLocalStorage();
     
     // 로딩 페이지 1초만 표시
@@ -724,7 +767,7 @@ function showResults() {
             btn.className = 'download-btn';
             btn.textContent = '다운로드';
             btn.onclick = function() {
-                downloadImage(imgData, '2025-회고-' + (index + 1) + '.png');
+                downloadImage(imgData, '2025-회고-' + (index + 1) + '.jpg');
             };
             div.appendChild(btn);
             
@@ -765,7 +808,7 @@ function downloadAllImages() {
     generatedImages.forEach(function(imgData, index) {
         if (imgData) {
             setTimeout(function() {
-                downloadImage(imgData, '2025-회고-' + (index + 1) + '.png');
+                downloadImage(imgData, '2025-회고-' + (index + 1) + '.jpg');
             }, index * 500);
         }
     });
