@@ -636,30 +636,28 @@ async function generateImage9() {
         const gap = 15;
         const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
         let yPos = 200;
-        
+
         for (let i = 0; i < imgCount; i++) {
             const file = input.files[i];
+            const dataUrl = await fileToDataURL(file);
+            if (!dataUrl) continue;
+
             const img = await new Promise(function(resolve) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = new Image();
-                    image.onload = function() { resolve(image); };
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                const image = new Image();
+                image.onload = function() { resolve(image); };
+                image.onerror = function() { resolve(null); };
+                image.src = dataUrl;
             });
-            
+
+            if (!img) continue;
+
             const col = i % gridCols;
             const row = Math.floor(i / gridCols);
             const x = startX + col * (imgSize + gap);
             const y = yPos + row * (imgSize + gap);
-            
+
             drawImageCover(ctx, img, x, y, imgSize, imgSize);
         }
-        
-        yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
-    } else {
-        let yPos = 900;
     }
     
     // 키워드
@@ -675,7 +673,7 @@ async function generateImage9() {
     ctx.fillText(keywords.join(' '), canvas.width / 2, 1100);
     
     // 문장
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = '300 40px Pretendard, sans-serif';
     const sentence = document.getElementById('vision-sentence').value || '';
     wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
