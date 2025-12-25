@@ -618,11 +618,11 @@ async function generateImage9() {
     const ctx = canvas.getContext('2d');
     
     // 배경
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // 제목
-    ctx.fillStyle = '#1a1a1a';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = '300 60px Pretendard, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('2026 추구미 비전보드', canvas.width / 2, 100);
@@ -633,7 +633,7 @@ async function generateImage9() {
         const imgCount = Math.min(input.files.length, 6);
         const gridCols = 3;
         const imgSize = 330;
-        const gap = 20;
+        const gap = 15;
         const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
         let yPos = 200;
         
@@ -700,7 +700,7 @@ function showResults() {
     const titles = [
         '1. 추구미 vs 실제미',
         '2. 올해의 OO',
-        '3. 소비 정산',
+        '3. 소비정산',
         '4. 최고의 책',
         '5. 나쁜 습관',
         '6. 2026 스포일러',
