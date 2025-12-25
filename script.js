@@ -774,7 +774,21 @@ function downloadAllImages() {
 // LocalStorage에 저장
 function saveToLocalStorage() {
     if (userName) {
-        localStorage.setItem('retrospect_' + userName, JSON.stringify(generatedImages));
+        try {
+            localStorage.setItem('retrospect_' + userName, JSON.stringify(generatedImages));
+        } catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                console.warn('저장 공간이 부족합니다. 이미지는 현재 세션에서만 유지됩니다.');
+                // 필요시 오래된 데이터 삭제
+                try {
+                    localStorage.removeItem('retrospect_' + userName);
+                } catch (cleanupError) {
+                    console.error('localStorage 정리 실패:', cleanupError);
+                }
+            } else {
+                console.error('저장 실패:', e);
+            }
+        }
     }
 }
 
