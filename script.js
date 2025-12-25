@@ -612,10 +612,12 @@ async function generateImage8() {
 
 // 9번 페이지 이미지 생성 (2026 비전보드)
 async function generateImage9() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
+    try {
+        console.log('generateImage9 시작');
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1440;
+        const ctx = canvas.getContext('2d');
     
     // 배경
     ctx.fillStyle = '#000000';
@@ -686,16 +688,28 @@ async function generateImage9() {
     const sentence = document.getElementById('vision-sentence').value || '';
     wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
     
-    generatedImages[6] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
-    // 로딩 페이지 1초만 표시
-    showPage('loading');
-    
-    // 1초 후 결과 페이지로 이동
-    setTimeout(function() {
-        showResults();
-    }, 1000);
+        generatedImages[6] = canvas.toDataURL('image/png');
+        console.log('이미지 생성 완료');
+        saveToLocalStorage();
+
+        // 로딩 페이지 1초만 표시
+        showPage('loading');
+        console.log('로딩 페이지 표시');
+
+        // 1초 후 결과 페이지로 이동
+        setTimeout(function() {
+            console.log('결과 페이지로 이동');
+            showResults();
+        }, 1000);
+    } catch (error) {
+        console.error('generateImage9 에러:', error);
+        alert('이미지 생성 중 오류가 발생했습니다: ' + error.message + '\n\n그래도 결과 페이지로 이동합니다.');
+        // 에러가 나도 결과 페이지로 이동
+        showPage('loading');
+        setTimeout(function() {
+            showResults();
+        }, 1000);
+    }
 }
 
 // 결과 보여주기
