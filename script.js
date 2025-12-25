@@ -476,7 +476,14 @@ function showResults() {
 
     resultImagesDiv.appendChild(container);
     console.log('[DEBUG] showResults 완료, 결과 페이지로 이동');
-    showPage('result');
+
+    // 직접 DOM 조작으로 페이지 전환
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    document.getElementById('result').classList.add('active');
+    window.scrollTo(0, 0);
+
     } catch (error) {
         console.error('[ERROR] showResults 실패:', error);
         alert('결과 페이지 생성 중 오류가 발생했습니다: ' + error.message);
