@@ -56,28 +56,27 @@ function goBack() {
 }
 
 // 이미지 미리보기
-function previewImage(input, previewId) {
+async function previewImage(input, previewId) {
     try {
         const preview = document.getElementById(previewId);
         if (!preview) {
             console.error('Preview element not found:', previewId);
             return;
         }
-        
+
         const file = input.files[0];
-        
+
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.style.backgroundImage = 'url(' + e.target.result + ')';
+            // HEIC 변환 및 리사이징 적용 (미리보기용)
+            const resizedDataUrl = await resizeImage(file, 800, 800, 0.8);
+            if (resizedDataUrl) {
+                preview.style.backgroundImage = 'url(' + resizedDataUrl + ')';
                 const span = preview.querySelector('span');
                 if (span) span.style.display = 'none';
                 preview.classList.add('has-image');
-            };
-            reader.onerror = function(error) {
-                console.error('File reading error:', error);
-            };
-            reader.readAsDataURL(file);
+            } else {
+                console.error('이미지 변환 실패:', file.name);
+            }
         }
     } catch (error) {
         console.error('Preview image error:', error);
@@ -85,21 +84,27 @@ function previewImage(input, previewId) {
 }
 
 // 다중 이미지 미리보기
-function previewMultipleImages(input, previewId) {
+async function previewMultipleImages(input, previewId) {
     const preview = document.getElementById(previewId);
     const files = input.files;
-    
+
     if (files.length > 0) {
         preview.innerHTML = '';
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+        for (const file of Array.from(files)) {
+            try {
+                // HEIC 변환 및 리사이징 적용 (미리보기용으로 작은 사이즈)
+                const resizedDataUrl = await resizeImage(file, 800, 800, 0.8);
+                if (resizedDataUrl) {
+                    const img = document.createElement('img');
+                    img.src = resizedDataUrl;
+                    preview.appendChild(img);
+                } else {
+                    console.warn('이미지 미리보기 실패:', file.name);
+                }
+            } catch (error) {
+                console.error('이미지 처리 중 오류:', error);
+            }
+        }
     }
 }
 
@@ -196,6 +201,69 @@ async function fileToDataURL(file) {
   });
 }
 
+// 이미지 리사이징 헬퍼 함수 (메모리 효율을 위해)
+async function resizeImage(file, maxWidth = 2048, maxHeight = 2048, quality = 0.85) {
+  return new Promise(async (resolve) => {
+    try {
+      // HEIC 변환 먼저 처리
+      const dataUrl = await fileToDataURL(file);
+      if (!dataUrl) {
+        resolve(null);
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        try {
+          let width = img.width;
+          let height = img.height;
+
+          // 리사이징이 필요한지 확인
+          if (width <= maxWidth && height <= maxHeight) {
+            resolve(dataUrl);
+            return;
+          }
+
+          // 비율 유지하며 리사이징
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          // Canvas로 리사이징
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 리사이징된 이미지를 DataURL로 변환
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(resizedDataUrl);
+        } catch (error) {
+          console.error('이미지 리사이징 오류:', error);
+          resolve(dataUrl); // 리사이징 실패 시 원본 반환
+        }
+      };
+      img.onerror = () => {
+        console.error('이미지 로드 실패');
+        resolve(null);
+      };
+      img.src = dataUrl;
+    } catch (error) {
+      console.error('resizeImage 오류:', error);
+      resolve(null);
+    }
+  });
+}
+
 // Canvas에서 쓸 수 있는 Image 객체로 로드
 function loadImageToCanvas(inputId) {
   return new Promise(async (resolve) => {
@@ -206,8 +274,8 @@ function loadImageToCanvas(inputId) {
     }
 
     const file = input.files[0];
-    const dataUrl = await fileToDataURL(file);
-    if (!dataUrl) {
+    const resizedDataUrl = await resizeImage(file);
+    if (!resizedDataUrl) {
       resolve(null);
       return;
     }
@@ -218,7 +286,7 @@ function loadImageToCanvas(inputId) {
       console.error('이미지 디코딩 실패:', file.name, file.type);
       resolve(null); // ❗ 실패해도 다음 페이지로 넘어가게 함
     };
-    img.src = dataUrl;
+    img.src = resizedDataUrl;
   });
 }
 
@@ -636,27 +704,36 @@ async function generateImage9() {
         const gap = 15;
         const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
         let yPos = 200;
-        
+
         for (let i = 0; i < imgCount; i++) {
             const file = input.files[i];
+            // HEIC 변환 및 리사이징 적용
+            const resizedDataUrl = await resizeImage(file, 1024, 1024, 0.85);
+            if (!resizedDataUrl) {
+                console.warn('이미지 처리 실패, 건너뜀:', file.name);
+                continue;
+            }
+
             const img = await new Promise(function(resolve) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = new Image();
-                    image.onload = function() { resolve(image); };
-                    image.src = e.target.result;
+                const image = new Image();
+                image.onload = function() { resolve(image); };
+                image.onerror = function() {
+                    console.error('이미지 로드 실패:', file.name);
+                    resolve(null);
                 };
-                reader.readAsDataURL(file);
+                image.src = resizedDataUrl;
             });
-            
+
+            if (!img) continue;
+
             const col = i % gridCols;
             const row = Math.floor(i / gridCols);
             const x = startX + col * (imgSize + gap);
             const y = yPos + row * (imgSize + gap);
-            
+
             drawImageCover(ctx, img, x, y, imgSize, imgSize);
         }
-        
+
         yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
     } else {
         let yPos = 900;
