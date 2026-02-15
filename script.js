@@ -5,33 +5,47 @@ let generatedImages = [];
 
 // 페이지 전환
 function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    document.getElementById(pageId).classList.add('active');
-    currentPage = pageId;
-    window.scrollTo(0, 0);
+    console.log('[DEBUG] showPage 호출됨, pageId:', pageId);
+    try {
+        const targetPage = document.getElementById(pageId);
+        if (!targetPage) {
+            throw new Error('페이지를 찾을 수 없습니다: ' + pageId);
+        }
+
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        targetPage.classList.add('active');
+        currentPage = pageId;
+        window.scrollTo(0, 0);
+        console.log('[DEBUG] showPage 성공, currentPage:', currentPage);
+    } catch (error) {
+        console.error('[ERROR] showPage 실패:', error);
+        alert('페이지 전환 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 회고 시작
 function startRetrospect() {
     const nameInput = document.getElementById('user-name');
     const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert('이름을 입력해주세요!');
-        nameInput.focus();
-        return;
-    }
-    
-    userName = name;
+
+    // 이름 입력은 선택사항
+    userName = name || '익명';
     localStorage.setItem('userName', userName);
     showPage('page1');
 }
 
 // 다음 페이지
 function nextPage(pageNum) {
-    showPage('page' + pageNum);
+    console.log('[DEBUG] nextPage 호출됨, pageNum:', pageNum);
+    try {
+        showPage('page' + pageNum);
+        console.log('[DEBUG] nextPage 성공');
+    } catch (error) {
+        console.error('[ERROR] nextPage 실패:', error);
+        alert('페이지 이동 중 오류가 발생했습니다: ' + error.message);
+    }
 }
 
 // 이전 페이지
@@ -223,516 +237,294 @@ function loadImageToCanvas(inputId) {
 }
 
 // 1~3번 페이지 합성 이미지 생성
-async function generateImage123() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경 - 흰색
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    let yPos = 80;
-    
-    // 제목
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 60px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('2025년 나의 추구미 vs 실제미', canvas.width / 2, yPos);
-    yPos += 100;
-    
-    // 추구미 섹션
-    ctx.fillStyle = 'white';
-    ctx.fillRect(60, yPos, canvas.width - 120, 500);
-    
-    // 추구미 이미지
-    const img1 = await loadImageToCanvas('img-page1');
-    if (img1) {
-        const imgWidth = 400;
-        const imgHeight = 400;
-        const imgX = (canvas.width - imgWidth) / 2;
-        drawImageCover(ctx, img1, imgX, yPos + 30, imgWidth, imgHeight);
-    }
-    
-    // 추구미 키워드
-    ctx.fillStyle = '#667eea';
-    ctx.font = 'bold 40px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    const k1_1 = document.getElementById('keyword1-page1').value || '';
-    const k1_2 = document.getElementById('keyword2-page1').value || '';
-    const k1_3 = document.getElementById('keyword3-page1').value || '';
-    ctx.fillText('#' + k1_1 + ' #' + k1_2 + ' #' + k1_3, canvas.width / 2, yPos + 460);
-    
-    yPos += 550;
-    
-    // 실제미 섹션
-    ctx.fillStyle = 'white';
-    ctx.fillRect(60, yPos, canvas.width - 120, 500);
-    
-    // 실제미 이미지
-    const img2 = await loadImageToCanvas('img-page2');
-    if (img2) {
-        const imgWidth = 400;
-        const imgHeight = 400;
-        const imgX = (canvas.width - imgWidth) / 2;
-        drawImageCover(ctx, img2, imgX, yPos + 30, imgWidth, imgHeight);
-    }
-    
-    // 실제미 키워드
-    ctx.fillStyle = '#764ba2';
-    ctx.font = 'bold 40px Pretendard, sans-serif';
-    const k2_1 = document.getElementById('keyword1-page2').value || '';
-    const k2_2 = document.getElementById('keyword2-page2').value || '';
-    const k2_3 = document.getElementById('keyword3-page2').value || '';
-    ctx.fillText('#' + k2_1 + ' #' + k2_2 + ' #' + k2_3, canvas.width / 2, yPos + 460);
-    
-    yPos += 550;
-    
-    // 갓생 vs 걍생
-    const godlife = document.getElementById('godlife-percent').textContent;
-    const normal = document.getElementById('normal-percent').textContent;
-    
-    ctx.fillStyle = 'white';
-    ctx.fillRect(60, yPos, canvas.width - 120, 150);
-    
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 50px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('갓생 ' + godlife + '% : 걍생 ' + normal + '%', canvas.width / 2, yPos + 90);
-    
-    // 이미지 저장
-    generatedImages[0] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage123() {
+    console.log('generateImage123 호출됨 - 즉시 페이지 이동');
     nextPage(4);
 }
 
 // 4번 페이지 이미지 생성 (올해의 OO)
-async function generateImage4() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '300 60px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('2025년 올해의 OO', canvas.width / 2, 100);
-    
-    // 7개 이미지 그리드로 배치
-    const images = [
-        { id: 'img-music', label: '노래/앨범/뮤지션' },
-        { id: 'img-movie', label: '영화/드라마/예능' },
-        { id: 'img-book', label: '책' },
-        { id: 'img-event', label: '사건/추억/도전' },
-        { id: 'img-shopping', label: '소비/선물' },
-        { id: 'img-food', label: '식당/카페' },
-        { id: 'img-etc', label: '기타' }
-    ];
-    
-    const gridCols = 2;
-    const imgSize = 450;
-    const gap = 30;
-    const startX = (canvas.width - (imgSize * 2 + gap)) / 2;
-    let yPos = 180;
-    
-    for (let i = 0; i < images.length; i++) {
-        const col = i % gridCols;
-        const row = Math.floor(i / gridCols);
-        const x = startX + col * (imgSize + gap);
-        const y = yPos + row * (imgSize + gap + 50);
-        
-        // 흰 배경
-        ctx.fillStyle = 'white';
-        ctx.fillRect(x, y, imgSize, imgSize);
-        
-        // 이미지
-        const img = await loadImageToCanvas(images[i].id);
-        if (img) {
-            drawImageCover(ctx, img, x + 10, y + 10, imgSize - 20, imgSize - 20);
-        }
-    }
-    
-    generatedImages[1] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage4() {
+    console.log('generateImage4 호출됨 - 즉시 페이지 이동');
     nextPage(5);
 }
 
 // 5번 페이지 이미지 생성 (소비 정산)
-async function generateImage5() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '300 55px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('소비 정산 - Money Log', canvas.width / 2, 100);
-    
-    let yPos = 200;
-    
-    const items = [
-        { id: 'best', title: 'Best Buy 🏆', color: '#667eea' },
-        { id: 'worst', title: 'Worst Buy 💸', color: '#764ba2' },
-        { id: 'delivery', title: '최애 배달음식 🍔', color: '#fcb69f' }
-    ];
-    
-    for (const item of items) {
-        // 섹션 배경
-        ctx.fillStyle = 'white';
-        ctx.fillRect(60, yPos, canvas.width - 120, 350);
-        
-        // 타이틀
-        ctx.fillStyle = item.color;
-        ctx.font = '400 40px Pretendard, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(item.title, canvas.width / 2, yPos + 50);
-        
-        // 이미지
-        const img = await loadImageToCanvas('img-' + item.id);
-        if (img) {
-            drawImageCover(ctx, img, 150, yPos + 80, 250, 250);
-        }
-        
-        // 이유
-        ctx.fillStyle = '#333';
-        ctx.font = '300 28px Pretendard, sans-serif';
-        ctx.textAlign = 'left';
-        const reason = document.getElementById('reason-' + item.id).value || '';
-        wrapText(ctx, reason, 440, yPos + 150, 400, 40);
-        
-        yPos += 400;
-    }
-    
-    generatedImages[2] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage5() {
+    console.log('generateImage5 호출됨 - 즉시 페이지 이동');
     nextPage(6);
 }
 
 // 6번 페이지 이미지 생성 (독서모임)
-async function generateImage6() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '300 50px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('우리의 본질은 독서모임', canvas.width / 2, 100);
-    ctx.font = '400 40px Pretendard, sans-serif';
-    ctx.fillText('2025 최고의 책', canvas.width / 2, 160);
-    
-    // 책 이미지
-    const img = await loadImageToCanvas('img-bookclub');
-    if (img) {
-        drawImageCover(ctx, img, 240, 230, 600, 700);
-    }
-    
-    // 책 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '400 45px Pretendard, sans-serif';
-    const title = document.getElementById('book-title').value || '';
-    ctx.fillText(title, canvas.width / 2, 1000);
-    
-    // 내용 섹션
-    let yPos = 1080;
-    
-    ctx.fillStyle = 'white';
-    ctx.fillRect(60, yPos, canvas.width - 120, 300);
-    
-    ctx.fillStyle = '#333';
-    ctx.font = '400 28px Pretendard, sans-serif';
-    ctx.textAlign = 'left';
-    
-    yPos += 40;
-    ctx.fillText('📖 선택 이유', 100, yPos);
-    yPos += 10;
-    ctx.font = '300 24px Pretendard, sans-serif';
-    const reason = document.getElementById('book-reason').value || '';
-    yPos = wrapText(ctx, reason, 100, yPos + 30, 880, 35);
-    
-    yPos += 50;
-    ctx.font = '400 28px Pretendard, sans-serif';
-    ctx.fillText('✨ 이후 변화', 100, yPos);
-    yPos += 10;
-    ctx.font = '300 24px Pretendard, sans-serif';
-    const change = document.getElementById('book-change').value || '';
-    wrapText(ctx, change, 100, yPos + 30, 880, 35);
-    
-    generatedImages[3] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage6() {
+    console.log('generateImage6 호출됨 - 즉시 페이지 이동');
     nextPage(7);
 }
 
 // 7번 페이지 이미지 생성 (나쁜 습관)
-async function generateImage7() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '300 55px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('2025년에 버리고 싶은', canvas.width / 2, 120);
-    ctx.fillText('나쁜 습관', canvas.width / 2, 190);
-    
-    let yPos = 350;
-    
-    const habitName = document.getElementById('habit1').value;
-    const reason = document.getElementById('habit1-reason').value || '';
-    const damage = document.getElementById('habit1-damage').value || '';
-    
-    // 습관 이름
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '400 60px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(habitName, canvas.width / 2, yPos);
-    
-    yPos += 120;
-    
-    // 구분선
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(150, yPos);
-    ctx.lineTo(canvas.width - 150, yPos);
-    ctx.stroke();
-    
-    yPos += 100;
-    
-    // 이유
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '400 35px Pretendard, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('왜 버리고 싶은가', 150, yPos);
-    yPos += 20;
-    ctx.fillStyle = '#666';
-    ctx.font = '300 30px Pretendard, sans-serif';
-    yPos = wrapText(ctx, reason, 150, yPos + 50, 780, 45);
-    
-    yPos += 120;
-    
-    // 손해
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '400 35px Pretendard, sans-serif';
-    ctx.fillText('나에게 준 손해', 150, yPos);
-    yPos += 20;
-    ctx.fillStyle = '#666';
-    ctx.font = '300 30px Pretendard, sans-serif';
-    wrapText(ctx, damage, 150, yPos + 50, 780, 45);
-    
-    generatedImages[4] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage7() {
+    console.log('generateImage7 호출됨 - 즉시 페이지 이동');
     nextPage(8);
 }
 
 // 8번 페이지 이미지 생성 (2026 스포일러)
-async function generateImage8() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#1a1a1a';
-    ctx.font = '300 50px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('스포일러하고 싶은', canvas.width / 2, 200);
-    ctx.fillText('2026년의 소식', canvas.width / 2, 270);
-    
-    // 부제
-    ctx.fillStyle = '#666';
-    ctx.font = '300 30px Pretendard, sans-serif';
-    ctx.fillText('2026년에 어떤 일이 일어날지 맞춰보세요', canvas.width / 2, 360);
-    
-    let yPos = 550;
-    
-    const spoilers = [
-        document.getElementById('spoiler1').value,
-        document.getElementById('spoiler2').value,
-        document.getElementById('spoiler3').value
-    ].filter(function(s) { return s; });
-    
-    spoilers.forEach(function(keyword, index) {
-        // 키워드 배경
-        ctx.fillStyle = '#fafafa';
-        ctx.fillRect(150, yPos, canvas.width - 300, 200);
-        
-        // 테두리
-        ctx.strokeStyle = '#e0e0e0';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(150, yPos, canvas.width - 300, 200);
-        
-        // 키워드
-        ctx.fillStyle = '#1a1a1a';
-        ctx.font = '400 55px Pretendard, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('#' + keyword, canvas.width / 2, yPos + 120);
-        
-        yPos += 280;
-    });
-    
-    generatedImages[5] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
+function generateImage8() {
+    console.log('generateImage8 호출됨 - 즉시 페이지 이동');
     nextPage(9);
 }
 
 // 9번 페이지 이미지 생성 (2026 비전보드)
-async function generateImage9() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1440;
-    const ctx = canvas.getContext('2d');
-    
-    // 배경
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 제목
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = '300 60px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('2026 추구미 비전보드', canvas.width / 2, 100);
-    
-    // 비전 이미지들 (콜라주)
-    const input = document.getElementById('vision-imgs');
-    if (input.files && input.files.length > 0) {
-        const imgCount = Math.min(input.files.length, 6);
-        const gridCols = 3;
-        const imgSize = 330;
-        const gap = 15;
-        const startX = (canvas.width - (imgSize * gridCols + gap * 2)) / 2;
-        let yPos = 200;
-        
-        for (let i = 0; i < imgCount; i++) {
-            const file = input.files[i];
-            const img = await new Promise(function(resolve) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = new Image();
-                    image.onload = function() { resolve(image); };
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            const col = i % gridCols;
-            const row = Math.floor(i / gridCols);
-            const x = startX + col * (imgSize + gap);
-            const y = yPos + row * (imgSize + gap);
-            
-            drawImageCover(ctx, img, x, y, imgSize, imgSize);
-        }
-        
-        yPos += Math.ceil(imgCount / gridCols) * (imgSize + gap) + 80;
-    } else {
-        let yPos = 900;
-    }
-    
-    // 키워드
-    const keywords = [];
-    for (let i = 1; i <= 5; i++) {
-        const kw = document.getElementById('vision-keyword' + i).value;
-        if (kw) keywords.push('#' + kw);
-    }
-    
-    ctx.fillStyle = '#667eea';
-    ctx.font = '400 50px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(keywords.join(' '), canvas.width / 2, 1100);
-    
-    // 문장
-    ctx.fillStyle = '#333';
-    ctx.font = '300 40px Pretendard, sans-serif';
-    const sentence = document.getElementById('vision-sentence').value || '';
-    wrapText(ctx, '"' + sentence + '"', canvas.width / 2, 1200, 900, 55);
-    
-    generatedImages[6] = canvas.toDataURL('image/png');
-    saveToLocalStorage();
-    
-    // 로딩 페이지 1초만 표시
+function generateImage9() {
+    console.log('generateImage9 호출됨 - 즉시 결과 페이지 이동');
     showPage('loading');
-    
-    // 1초 후 결과 페이지로 이동
     setTimeout(function() {
         showResults();
     }, 1000);
 }
 
+// 회고 완료 (Page 9에서 호출)
+function completeRetrospect() {
+    console.log('[DEBUG] completeRetrospect 호출됨');
+    try {
+        showPage('loading');
+        setTimeout(function() {
+            console.log('[DEBUG] 1초 후 showResults 호출');
+            showResults();
+        }, 1000);
+    } catch (error) {
+        console.error('[ERROR] completeRetrospect 실패:', error);
+        alert('완료 처리 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
 // 결과 보여주기
 function showResults() {
-    const resultImagesDiv = document.getElementById('result-images');
-    resultImagesDiv.innerHTML = '';
-    
-    const titles = [
-        '1. 추구미 vs 실제미',
-        '2. 올해의 OO',
-        '3. 소비정산',
-        '4. 최고의 책',
-        '5. 나쁜 습관',
-        '6. 2026 스포일러',
-        '7. 2026 비전보드'
-    ];
-    
-    generatedImages.forEach(function(imgData, index) {
-        if (imgData) {
-            const div = document.createElement('div');
-            div.className = 'result-item';
-            
-            const title = document.createElement('h3');
-            title.textContent = titles[index];
-            div.appendChild(title);
-            
-            const img = document.createElement('img');
-            img.src = imgData;
-            div.appendChild(img);
-            
-            const btn = document.createElement('button');
-            btn.className = 'download-btn';
-            btn.textContent = '다운로드';
-            btn.onclick = function() {
-                downloadImage(imgData, '2025-회고-' + (index + 1) + '.png');
-            };
-            div.appendChild(btn);
-            
-            resultImagesDiv.appendChild(div);
+    console.log('[DEBUG] showResults 함수 시작');
+    try {
+        const resultImagesDiv = document.getElementById('result-images');
+        if (!resultImagesDiv) {
+            throw new Error('result-images 엘리먼트를 찾을 수 없습니다');
         }
-    });
-    
+        resultImagesDiv.innerHTML = '';
+
+        // 전체 컨테이너
+        const container = document.createElement('div');
+        container.style.cssText = 'max-width: 800px; margin: 0 auto; padding: 40px 20px;';
+
+    // 타이틀
+    const title = document.createElement('h1');
+    title.style.cssText = 'text-align: center; font-size: 2.5em; margin-bottom: 20px; font-weight: 300;';
+    title.textContent = userName ? userName + '님의 2025년 회고' : '나의 2025년 회고';
+    container.appendChild(title);
+
+    const subtitle = document.createElement('p');
+    subtitle.style.cssText = 'text-align: center; color: #666; margin-bottom: 60px; font-size: 1.1em;';
+    subtitle.textContent = '한 해를 돌아보며 작성한 소중한 기록들';
+    container.appendChild(subtitle);
+
+    // 1. 추구미 vs 실제미
+    const section1 = createSection('2025년 나의 추구미 vs 실제미', '#667eea');
+
+    const pursue = createCard('추구미 (내가 추구했던 모습)', '#667eea');
+    const k1_1 = document.getElementById('keyword1-page1').value || '';
+    const k1_2 = document.getElementById('keyword2-page1').value || '';
+    const k1_3 = document.getElementById('keyword3-page1').value || '';
+    const reason1 = document.getElementById('reason-page1').value || '';
+    pursue.innerHTML += `
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #667eea;">키워드:</strong> #${k1_1} #${k1_2} #${k1_3}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>이유:</strong> ${reason1 || '작성하지 않음'}
+        </div>
+    `;
+    section1.appendChild(pursue);
+
+    const reality = createCard('실제미 (실제 나의 모습)', '#764ba2');
+    const k2_1 = document.getElementById('keyword1-page2').value || '';
+    const k2_2 = document.getElementById('keyword2-page2').value || '';
+    const k2_3 = document.getElementById('keyword3-page2').value || '';
+    const reason2 = document.getElementById('reason-page2').value || '';
+    reality.innerHTML += `
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #764ba2;">키워드:</strong> #${k2_1} #${k2_2} #${k2_3}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>이유:</strong> ${reason2 || '작성하지 않음'}
+        </div>
+    `;
+    section1.appendChild(reality);
+
+    container.appendChild(section1);
+
+    // 2. 갓생 vs 걍생
+    const section2 = createSection('2025 갓생 vs 걍생', '#f093fb');
+    const godlife = document.getElementById('godlife-percent').textContent;
+    const normal = document.getElementById('normal-percent').textContent;
+    const ratioCard = createCard('올해 나의 갓생 비율', '#f093fb');
+    ratioCard.innerHTML += `
+        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: bold; color: #667eea;">${godlife}%</div>
+                <div style="margin-top: 10px; color: #666;">갓생</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: bold; color: #764ba2;">${normal}%</div>
+                <div style="margin-top: 10px; color: #666;">걍생</div>
+            </div>
+        </div>
+    `;
+    section2.appendChild(ratioCard);
+    container.appendChild(section2);
+
+    // 3. 소비 정산
+    const section3 = createSection('소비 정산 - Money Log', '#fcb69f');
+
+    const bestBuy = createCard('Best Buy 🏆', '#667eea');
+    const bestReason = document.getElementById('reason-best').value || '작성하지 않음';
+    bestBuy.innerHTML += `<div style="color: #666; line-height: 1.6;">${bestReason}</div>`;
+    section3.appendChild(bestBuy);
+
+    const worstBuy = createCard('Worst Buy 💸', '#764ba2');
+    const worstReason = document.getElementById('reason-worst').value || '작성하지 않음';
+    worstBuy.innerHTML += `<div style="color: #666; line-height: 1.6;">${worstReason}</div>`;
+    section3.appendChild(worstBuy);
+
+    const delivery = createCard('최애 배달음식 🍔', '#fcb69f');
+    const deliveryReason = document.getElementById('reason-delivery').value || '작성하지 않음';
+    delivery.innerHTML += `<div style="color: #666; line-height: 1.6;">${deliveryReason}</div>`;
+    section3.appendChild(delivery);
+
+    container.appendChild(section3);
+
+    // 4. 독서모임
+    const section4 = createSection('우리의 본질은 독서모임 📚', '#4facfe');
+    const bookCard = createCard('2025 최고의 책', '#4facfe');
+    const bookTitle = document.getElementById('book-title').value || '작성하지 않음';
+    const bookReason = document.getElementById('book-reason').value || '작성하지 않음';
+    const bookChange = document.getElementById('book-change').value || '작성하지 않음';
+    const bookOpinion = document.getElementById('book-opinion').value || '작성하지 않음';
+    bookCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #4facfe; font-size: 1.3em;">${bookTitle}</strong>
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>📖 선택 이유:</strong><br>${bookReason}
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>✨ 이후 변화:</strong><br>${bookChange}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>💭 2026년 독서모임에 바라는 점:</strong><br>${bookOpinion}
+        </div>
+    `;
+    section4.appendChild(bookCard);
+    container.appendChild(section4);
+
+    // 5. 나쁜 습관
+    const section5 = createSection('2025년에 버리고 싶은 나쁜 습관', '#fa709a');
+    const habitCard = createCard('버리고 싶은 습관', '#fa709a');
+    const habitName = document.getElementById('habit1').value || '작성하지 않음';
+    const habitReason = document.getElementById('habit1-reason').value || '작성하지 않음';
+    const habitDamage = document.getElementById('habit1-damage').value || '작성하지 않음';
+    habitCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong style="color: #fa709a; font-size: 1.5em;">${habitName}</strong>
+        </div>
+        <div style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+            <strong>왜 버리고 싶은가:</strong><br>${habitReason}
+        </div>
+        <div style="color: #666; line-height: 1.6;">
+            <strong>나에게 준 손해:</strong><br>${habitDamage}
+        </div>
+    `;
+    section5.appendChild(habitCard);
+    container.appendChild(section5);
+
+    // 6. 2026 스포일러
+    const section6 = createSection('스포일러하고 싶은 2026년의 소식 📮', '#30cfd0');
+    const spoilerCard = createCard('힌트 키워드', '#30cfd0');
+    const spoiler1 = document.getElementById('spoiler1').value || '';
+    const spoiler2 = document.getElementById('spoiler2').value || '';
+    const spoiler3 = document.getElementById('spoiler3').value || '';
+    const spoilers = [spoiler1, spoiler2, spoiler3].filter(s => s);
+    spoilerCard.innerHTML += `
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+            ${spoilers.map(s => `<span style="background: #30cfd0; color: white; padding: 10px 20px; border-radius: 25px; font-size: 1.2em;">#${s}</span>`).join('')}
+        </div>
+    `;
+    section6.appendChild(spoilerCard);
+    container.appendChild(section6);
+
+    // 7. 2026 비전보드
+    const section7 = createSection('2026 추구미 비전보드 ✨', '#a8edea');
+    const visionCard = createCard('나의 비전', '#a8edea');
+    const visionK1 = document.getElementById('vision-keyword1').value || '';
+    const visionK2 = document.getElementById('vision-keyword2').value || '';
+    const visionK3 = document.getElementById('vision-keyword3').value || '';
+    const visionKeywords = [visionK1, visionK2, visionK3].filter(k => k);
+    const visionSentence = document.getElementById('vision-sentence').value || '작성하지 않음';
+    visionCard.innerHTML += `
+        <div style="margin-bottom: 20px;">
+            <strong>키워드:</strong><br>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                ${visionKeywords.map(k => `<span style="background: #a8edea; padding: 8px 16px; border-radius: 20px; font-size: 1.1em;">#${k}</span>`).join('')}
+            </div>
+        </div>
+        <div style="color: #666; line-height: 1.6; font-style: italic; font-size: 1.1em; margin-top: 20px;">
+            "${visionSentence}"
+        </div>
+    `;
+    section7.appendChild(visionCard);
+    container.appendChild(section7);
+
+    // 마무리 메시지
+    const footer = document.createElement('div');
+    footer.style.cssText = 'text-align: center; margin-top: 60px; padding: 40px 20px; background: #f8f9fa; border-radius: 10px;';
+    footer.innerHTML = `
+        <h3 style="font-weight: 400; margin-bottom: 15px;">🎉 2025년 회고를 완성했습니다!</h3>
+        <p style="color: #666; line-height: 1.8;">
+            한 해를 돌아보는 시간을 가지셨습니다.<br>
+            2026년에는 더 멋진 한 해를 만들어가세요! 💪
+        </p>
+    `;
+    container.appendChild(footer);
+
+    resultImagesDiv.appendChild(container);
+    console.log('[DEBUG] showResults 완료, 결과 페이지로 이동');
+
+    // showPage 함수를 사용하여 currentPage 변수도 업데이트
     showPage('result');
+
+    } catch (error) {
+        console.error('[ERROR] showResults 실패:', error);
+        alert('결과 페이지 생성 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// 섹션 생성 헬퍼 함수
+function createSection(title, color) {
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom: 50px;';
+
+    const heading = document.createElement('h2');
+    heading.style.cssText = `font-size: 1.8em; margin-bottom: 25px; font-weight: 400; color: ${color}; border-bottom: 2px solid ${color}; padding-bottom: 10px;`;
+    heading.textContent = title;
+    section.appendChild(heading);
+
+    return section;
+}
+
+// 카드 생성 헬퍼 함수
+function createCard(title, color) {
+    const card = document.createElement('div');
+    card.style.cssText = 'background: white; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid ' + color + ';';
+
+    const cardTitle = document.createElement('h3');
+    cardTitle.style.cssText = 'font-size: 1.3em; margin-bottom: 15px; font-weight: 400; color: #333;';
+    cardTitle.textContent = title;
+    card.appendChild(cardTitle);
+
+    return card;
 }
 
 // 슬라이더 좌우 이동 함수
